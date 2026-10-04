@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ATS·CORE — Resume Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="scanline"></div>
+
+  <!-- ── HEADER ──────────────────────────────────────── -->
+  <header>
+    <div class="hdr-left">
+      <span class="logo">JOB<span class="logo-dot">·</span>FIT</span>
+      <span class="hdr-sub">RESUME INTELLIGENCE SYSTEM v2.0</span>
+    </div>
+    <div class="hdr-right">
+      <span class="status-dot" id="statusDot"></span>
+      <span class="status-label" id="statusLabel">OFFLINE</span>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── INPUT PANEL ─────────────────────────────────── -->
+    <div class="grid-2" id="inputGrid">
+
+      <!-- Left: upload -->
+      <div class="panel" id="uploadBox">
+        <div class="panel-title">01 / RESUME PDF</div>
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-inner">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <rect x="3" y="3" width="18" height="18" rx="1"/>
+              <path d="M8 12h8M12 8v8"/>
+            </svg>
+            <p>DRAG &amp; DROP PDF</p>
+            <label class="browse-btn" for="fileInput">BROWSE FILES</label>
+            <input type="file" id="fileInput" accept=".pdf" hidden/>
+          </div>
+          <div class="file-tag" id="fileTag"></div>
+        </div>
+      </div>
+
+      <!-- Right: job desc -->
+      <div class="panel" id="jdBox">
+        <div class="panel-title">02 / JOB DESCRIPTION</div>
+        <textarea id="jobDesc" placeholder="Paste the full job description here…"></textarea>
+        <div class="jd-meta">
+          <span id="charCount">0 chars</span>
+          <span id="wordCount">0 words</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RUN BUTTON ───────────────────────────────────── -->
+    <button class="run-btn" id="runBtn">
+      <span id="runLabel">▶ RUN ANALYSIS</span>
+    </button>
+    <div class="err-bar" id="errBar"></div>
+
+    <!-- ── PROCESSING LOG ──────────────────────────────── -->
+    <div class="panel log-panel" id="logPanel" style="display:none">
+      <div class="panel-title">PROCESSING LOG</div>
+      <div class="log-lines" id="logLines"></div>
+    </div>
+
+    <!-- ── RESULTS ──────────────────────────────────────── -->
+    <div id="results" style="display:none">
+
+      <!-- Score strip -->
+      <div class="score-strip">
+        <div class="big-score-wrap">
+          <svg class="arc-svg" viewBox="0 0 200 110">
+            <path class="arc-bg"   d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke-width="12"/>
+            <path class="arc-fill" id="arcFill" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke-width="12"
+              stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+          </svg>
+          <div class="big-score-inner">
+            <span class="big-score-num" id="bigScore">0</span>
+            <span class="big-score-lbl">ATS SCORE</span>
+          </div>
+        </div>
+
+        <div class="score-bars">
+          <div class="sbar-row">
+            <span class="sbar-lbl">BERT SEMANTIC</span>
+            <div class="sbar-track"><div class="sbar-fill" id="sbarBert"></div></div>
+            <span class="sbar-val" id="valBert">—</span>
+          </div>
+          <div class="sbar-row">
+            <span class="sbar-lbl">SKILL MATCH</span>
+            <div class="sbar-track"><div class="sbar-fill" id="sbarSkill"></div></div>
+            <span class="sbar-val" id="valSkill">—</span>
+          </div>
+          <div class="sbar-row">
+            <span class="sbar-lbl">NLP KEYWORDS</span>
+            <div class="sbar-track"><div class="sbar-fill" id="sbarKw"></div></div>
+            <span class="sbar-val" id="valKw">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skills grid -->
+      <div class="grid-2 skill-grid">
+        <div class="panel">
+          <div class="panel-title ok-title">✓ MATCHED SKILLS</div>
+          <div class="chip-zone" id="matchedChips"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title bad-title">✗ MISSING SKILLS</div>
+          <div class="chip-zone" id="missingChips"></div>
+        </div>
+      </div>
+
+      <!-- Keyword grid -->
+      <div class="grid-2 skill-grid">
+        <div class="panel">
+          <div class="panel-title">RESUME KEYWORDS <span class="title-tag">spaCy</span></div>
+          <div class="chip-zone" id="resumeKwChips"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-title">JD KEYWORDS <span class="title-tag">spaCy</span></div>
+          <div class="chip-zone" id="jdKwChips"></div>
+        </div>
+      </div>
+
+      <!-- Education & Experience (compact) -->
+      <div class="panel" id="entitiesPanel">
+        <div class="panel-title">PROFILE</div>
+        <div class="grid-2" style="gap:10px; margin-top:6px;">
+          <div>
+            <div class="ent-label">EDUCATION QUALIFICATION</div>
+            <div class="chip-zone" id="educationRow"></div>
+          </div>
+          <div>
+            <div class="ent-label">WORKING EXPERIENCE</div>
+            <div class="chip-zone" id="experienceRow"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI insights -->
+      <div class="panel insights-panel">
+        <div class="panel-title">AI INSIGHTS <span class="title-tag">Gemini</span></div>
+        <div class="insights-content" id="insightsPre"></div>
+      </div>
+
+      <button class="reset-btn" id="resetBtn">↩ RESET</button>
+    </div>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

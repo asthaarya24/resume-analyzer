@@ -1,0 +1,8 @@
+flask
+flask-cors
+PyPDF2
+sentence-transformers
+spacy
+numpy
+google-generativeai
+python-dotenv
